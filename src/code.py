@@ -1,9 +1,11 @@
 import heapq 
 from math import inf, isfinite
+import datetime
 
 mapNode = {}
 
 def findShortestPath(a, b, adjMatrixAll):
+    begin_time = datetime.datetime.now()
     path = []
     # djikstra from a 
     # (berdasarkan referensi psudocode dari buku "Pemrograman Kompetitif Dasar")
@@ -26,13 +28,15 @@ def findShortestPath(a, b, adjMatrixAll):
                         pred[v] = u
                         heapq.heappush(pq, (dist[v],v))
     
+    print(datetime.datetime.now() - begin_time)
+
     # find path dari a -> b
     nodeNow = b
     while(nodeNow!=-1):
         path.append(nodeNow)
         nodeNow = pred[nodeNow]
-    path = path.reverse()
-    # print(path)
+    path = path[::-1]
+    
     return dist[b], path
 
 def getEdgeDataFromFile():
@@ -49,6 +53,7 @@ def getEdgeDataFromFile():
         v = int(parseLine[2])
         weight = float(parseLine[3])
         adjMatrixAll[u][v] = weight
+        adjMatrixAll[v][u] = weight
     
     return adjMatrixAll
 
@@ -59,6 +64,7 @@ def initSubGraph(nodeKantor, listNodeTujuan, adjMatrixAll):
     listNodeTujuan.append(nodeKantor)   #sementara aja
 
     for u in listNodeTujuan:
+        print("process: find all distance from ", u)
         for v in listNodeTujuan:
             uMapped = mapNode[u]
             vMapped = mapNode[v]
@@ -66,10 +72,18 @@ def initSubGraph(nodeKantor, listNodeTujuan, adjMatrixAll):
                 adjMatrixSubGraph[uMapped][vMapped] = 0
                 listPath[uMapped][vMapped] = [u]
             else:
-                dist, path = findShortestPath(u,v,adjMatrixAll)
-                # print(dist)
-                adjMatrixSubGraph[uMapped][vMapped] = dist
-                listPath[uMapped][vMapped] = path
+                if (isfinite(adjMatrixSubGraph[vMapped][uMapped])):
+                    adjMatrixSubGraph[uMapped][vMapped] = adjMatrixSubGraph[vMapped][uMapped]
+                    path = []
+                    for e in reversed(listPath[vMapped][uMapped]):
+                        listPath[uMapped][vMapped].append(e)
+                else:
+                    dist, path = findShortestPath(u,v,adjMatrixAll)
+                    # print(dist)
+                    adjMatrixSubGraph[uMapped][vMapped] = dist
+                    listPath[uMapped][vMapped] = path    
+
+                
 
     listNodeTujuan.pop()
 
@@ -93,9 +107,11 @@ def init():
     adjMatrixSubGraph, listPath = initSubGraph(nodeKantor, listNodeTujuan, adjMatrixAll)
     
     # print
+    print("done")
     listNodeTujuan.append(nodeKantor)
     for u in listNodeTujuan:
         print(u, " ", adjMatrixSubGraph[mapNode[u]])
+        print(listPath[mapNode[u]])
 
 if __name__ == "__main__":
     init()
