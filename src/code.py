@@ -1,11 +1,13 @@
 import heapq 
 from math import inf, isfinite
 import datetime
+from solver import solve
 
-mapNode = {}
+mapNode = {} #node ke index
+mapIdx = {} # idx ke node
 
-def findShortestPath(a, b, adjMatrixAll):
-    begin_time = datetime.datetime.now()
+def findShortestPath(a, b, adjListAll):
+    # begin_time = datetime.datetime.now()
     path = []
     # djikstra from a 
     # (berdasarkan referensi psudocode dari buku "Pemrograman Kompetitif Dasar")
@@ -21,14 +23,13 @@ def findShortestPath(a, b, adjMatrixAll):
         (curDist, u) = heapq.heappop(pq)
         if (not isVisited[u]):
             isVisited[u] = True
-            for v in range(6105):
-                if (isfinite(adjMatrixAll[u][v])):
-                    if (dist[v] > dist[u] + adjMatrixAll[u][v]):
-                        dist[v] = dist[u] + adjMatrixAll[u][v]
-                        pred[v] = u
-                        heapq.heappush(pq, (dist[v],v))
+            for v in adjListAll[u]:
+                if (dist[v] > dist[u] + adjListAll[u][v]):
+                    dist[v] = dist[u] + adjListAll[u][v]
+                    pred[v] = u
+                    heapq.heappush(pq, (dist[v],v))
     
-    print(datetime.datetime.now() - begin_time)
+    # print(datetime.datetime.now() - begin_time)
 
     # find path dari a -> b
     nodeNow = b
@@ -40,24 +41,24 @@ def findShortestPath(a, b, adjMatrixAll):
     return dist[b], path
 
 def getEdgeDataFromFile():
-    adjMatrixAll = [[inf for i in range(6105)] for i in range(6105)]
+    adjListAll = [{} for i in range(6105)]
     fEdge = open('../data/EdgeData.txt', 'r').readlines()
     for i in range(6105):
         for j in range(6105):
             if(i==j):
-                adjMatrixAll[i][j] = 0
+                adjListAll[i][j] = 0
 
     for line in fEdge:
         parseLine = [x for x in line.split()]
         u = int(parseLine[1])
         v = int(parseLine[2])
         weight = float(parseLine[3])
-        adjMatrixAll[u][v] = weight
-        adjMatrixAll[v][u] = weight
+        adjListAll[u][v] = weight
+        adjListAll[v][u] = weight
     
-    return adjMatrixAll
+    return adjListAll
 
-def initSubGraph(nodeKantor, listNodeTujuan, adjMatrixAll):
+def initSubGraph(nodeKantor, listNodeTujuan, adjListAll):
     listPath = [[[] for i in range(len(listNodeTujuan)+1)] for e in range(len(listNodeTujuan)+1)]
     adjMatrixSubGraph = [[inf for i in range(len(listNodeTujuan)+1)] for e in range(len(listNodeTujuan)+1)]
 
@@ -78,7 +79,7 @@ def initSubGraph(nodeKantor, listNodeTujuan, adjMatrixAll):
                     for e in reversed(listPath[vMapped][uMapped]):
                         listPath[uMapped][vMapped].append(e)
                 else:
-                    dist, path = findShortestPath(u,v,adjMatrixAll)
+                    dist, path = findShortestPath(u,v,adjListAll)
                     # print(dist)
                     adjMatrixSubGraph[uMapped][vMapped] = dist
                     listPath[uMapped][vMapped] = path    
@@ -99,19 +100,23 @@ def init():
     
     #node mapping
     mapNode[nodeKantor] = 0
+    mapIdx[0] = nodeKantor
     for i in range(nTujuan):
         mapNode[listNodeTujuan[i]] = i+1
+        mapIdx[i+1] = listNodeTujuan[i]
 
-    adjMatrixAll = getEdgeDataFromFile()
+    adjListAll = getEdgeDataFromFile()
     
-    adjMatrixSubGraph, listPath = initSubGraph(nodeKantor, listNodeTujuan, adjMatrixAll)
+    adjMatrixSubGraph, listPath = initSubGraph(nodeKantor, listNodeTujuan, adjListAll)
     
     # print
     print("done")
-    listNodeTujuan.append(nodeKantor)
-    for u in listNodeTujuan:
-        print(u, " ", adjMatrixSubGraph[mapNode[u]])
-        print(listPath[mapNode[u]])
+    # listNodeTujuan.append(nodeKantor)
+    # for u in listNodeTujuan:
+    #     print(u, " ", adjMatrixSubGraph[mapNode[u]])
+    #     print(listPath[mapNode[u]])
+
+    solve(adjMatrixSubGraph, listPath, nodeKantor, listNodeTujuan, mapIdx, 2, len(listNodeTujuan)+1)    
 
 if __name__ == "__main__":
     init()
