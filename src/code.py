@@ -140,19 +140,20 @@ def exec():
     # print
     print("done")
 
-    # solve TSP
+    # single TSP
     resSingleTSP = solveTSP(adjMatrixSubGraph, listPath, nodeKantor, listNodeTujuan, mapIdxToNode,mapNodeToIdx)    
     print(resSingleTSP)
 
     # clustering
+
     # sort list node
-    resSingleTSP.sort()
+    resSingleTSP.sort() # disort dulu supaya bisa di binary search nantinya
     print(resSingleTSP)
+    idx = binarySearch(resSingleTSP,nodeKantor,len(resSingleTSP))   # cari idx node kantor
     orderedListNodeTujuan = []
-    nextNode = resSingleTSP[0][1]
+    nextNode = resSingleTSP[idx][1]     # simpen node setelah node kantor
     for i in range(1,len(resSingleTSP)):
         idx = binarySearch(resSingleTSP,nextNode,len(resSingleTSP))
-        print(nextNode,idx)
         orderedListNodeTujuan.append(resSingleTSP[idx][0])
         nextNode = resSingleTSP[idx][1]
     print(orderedListNodeTujuan)
@@ -160,7 +161,6 @@ def exec():
     # bagi node nya sama rata
     idxNow = 0
     listNodeEveryKurir = []
-
     for i in range(jumlahKurir):
         jumlahNode = nTujuan//jumlahKurir + (1 if i < nTujuan % jumlahKurir else 0) 
         temp = []
