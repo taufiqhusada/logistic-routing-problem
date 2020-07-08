@@ -36,12 +36,12 @@ Masalah pengantaran barang untuk satu kendaraan dengan fungsi objektif jarak min
 - pencarian jarak terpendek antar masing masing node
 Menggunakan djikstra dari setiap node untuk mencari jarak terpendek. Ketika proses djikstra, dilakukan juga pencatatan path nya
 2. Penyelesaian mTSP (milestone 2)
-- membagi rata node nya sesuai jumlah kurirnya 
-Pertama tama adalah melakukan proses TSP untuk keseluruhan simpul dan mencatat urutan path nya. Dari hasil tersebut kemudian bagi node nya sama rata untuk tiap kurir berdasarkan urutan pathnya. misal hasil TSP keseluruhannya 1 -> 2 -> 3 -> 4 -> 5 -> 6 dan ada 3 kurir maka dibaginya [kurir 1 : 1, 2], [kurir 2 : 3, 4], [kurir 1: 5, 6]. Metode greedy ini didasari oleh alasan bahwa node-node yang berurutan di TSP "secara umum" berdekatan dibandingkan node yang lain
-- melakukan single TSP untuk tiap kurir dengan node-node yang sudah di assign di proses sebelumnya
+- membagi rata node nya sesuai jumlah kurirnya: 
+Pertama tama adalah melakukan proses TSP untuk keseluruhan simpul dan mencatat urutan path nya. Dari hasil tersebut kemudian bagi node nya sama rata untuk tiap kurir berdasarkan urutan pathnya. misal hasil TSP keseluruhannya 0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 0 dan ada 3 kurir maka dibaginya [kurir 1 : 1, 2], [kurir 2 : 3, 4], [kurir 1: 5, 6]. Metode greedy ini didasari oleh alasan bahwa node-node yang berurutan di TSP "secara umum" berdekatan dibandingkan node yang lain
+- melakukan single TSP untuk tiap kurir dengan node-node yang sudah di assign di proses sebelumnya:
 Melakukan proses TSP dengan menggunakan library MIP, berdasarkan persamaan matematika dari TSP
 3. Visualisasi map
-- Visualisasi dengan matplotlib
+- Visualisasi dengan matplotlib:
 mengeplot garis tiap edge yang menghubungkan kedua node. Pertama, plot seluruh edge di map dulu. Kemudian, plot path masing masing TSP dengan warna warna tertentu
 
 ## Referensi
